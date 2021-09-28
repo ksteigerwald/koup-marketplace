@@ -5,8 +5,7 @@ import axios from 'axios'
 import Web3Modal from "web3modal"
 
 import {
-  nftaddress,
-  nftmarketaddress
+  nftaddress, nftmarketaddress
 } from '../config'
 
 import NFT from '../artifacts/contracts/NFT.sol/NFT.json'
@@ -18,7 +17,6 @@ export default function Home() {
   useEffect(() => {
     loadNFTs()
   }, [])
-
   async function loadNFTs() {
     /* create a generic provider and query for unsold market items */
     const provider = new ethers.providers.JsonRpcProvider()
@@ -48,8 +46,6 @@ export default function Home() {
     setNfts(items)
     setLoadingState('loaded')
   }
-
-
   async function buyNft(nft) {
     /* needs the user to sign the transaction, so will use Web3Provider and sign it */
     const web3Modal = new Web3Modal()
@@ -60,13 +56,14 @@ export default function Home() {
 
     /* user will be prompted to pay the asking proces to complete the transaction */
     const price = ethers.utils.parseUnits(nft.price.toString(), 'ether')
+    console.log(price, nftaddress, nft.tokenId)
     const transaction = await contract.createMarketSale(nftaddress, nft.tokenId, {
       value: price
     })
+    console.log(transaction)
     await transaction.wait()
     loadNFTs()
   }
-
   if (loadingState === 'loaded' && !nfts.length) return (<h1 className="px-20 py-10 text-3xl">No items in marketplace</h1>)
   return (
     <div className="flex justify-center">
