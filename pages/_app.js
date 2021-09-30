@@ -6,26 +6,32 @@ function MyApp({ Component, pageProps }) {
   return (
     <div>
       <nav className="border-b p-6">
-        <p className="text-4xl font-bold">Koup Marketplace</p>
+        <p className="text-4xl font-bold">Koup </p>
+        <p className="text-1xl">NFT Coupons</p>
         <div className="flex mt-4">
           <Link href="/">
             <a className="mr-4 text-pink-500">
               Home
             </a>
           </Link>
-          <Link href="/create-item">
+          <Link href="/my-coupons">
             <a className="mr-6 text-pink-500">
-              Sell Digital Asset
+              My Coupons
             </a>
           </Link>
-          <Link href="/my-assets">
+          <Link href="/create-promotion">
             <a className="mr-6 text-pink-500">
-              My Digital Assets
+            Start a Promotion
             </a>
           </Link>
-          <Link href="/creator-dashboard">
+          <Link href="/my-promotions">
             <a className="mr-6 text-pink-500">
-              Creator Dashboard
+              My Promotions
+            </a>
+          </Link>
+          <Link href="/store">
+            <a className="mr-6 text-pink-500">
+              Store
             </a>
           </Link>
         </div>
