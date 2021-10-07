@@ -34,8 +34,8 @@ export default function CreateItem() {
     }
   }
   async function createMarket() {
-    const { name, description, price } = formInput
-    if (!name || !description || !price || !fileUrl) return
+    const { name, description } = formInput
+    if (!name || !description || !fileUrl) return
     /* first, upload to IPFS */
     const data = JSON.stringify({
       name, description, image: fileUrl
@@ -60,20 +60,16 @@ export default function CreateItem() {
     let contract = new ethers.Contract(nftaddress, NFT.abi, signer)
     let transaction = await contract.createToken(url)
     let tx = await transaction.wait()
-    console.log(tx)
     let event = tx.events[0]
-    console.log(tx.events)
     let value = event.args[2]
     let tokenId = value.toNumber()
-
-    const price = ethers.utils.parseUnits(formInput.price, 'ether')
 
     /* then list the item for sale on the marketplace */
     contract = new ethers.Contract(nftmarketaddress, Market.abi, signer)
     let listingPrice = await contract.getListingPrice()
     listingPrice = listingPrice.toString()
 
-    transaction = await contract.createMarketItem(nftaddress, tokenId, price, { value: listingPrice })
+    transaction = await contract.createMarketItem(nftaddress, tokenId, { value: listingPrice })
     await transaction.wait()
     router.push('/')
   }
@@ -90,11 +86,6 @@ export default function CreateItem() {
           placeholder="Asset Description"
           className="mt-2 border rounded p-4"
           onChange={e => updateFormInput({ ...formInput, description: e.target.value })}
-        />
-        <input
-          placeholder="Asset Price in Eth"
-          className="mt-2 border rounded p-4"
-          onChange={e => updateFormInput({ ...formInput, price: e.target.value })}
         />
         <input
           type="file"

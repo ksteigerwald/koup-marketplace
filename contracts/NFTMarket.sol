@@ -11,7 +11,7 @@ import "hardhat/console.sol";
 contract NFTMarket is ReentrancyGuard {
   using Counters for Counters.Counter;
   Counters.Counter private _itemIds;
-  Counters.Counter private _itemsSold;
+  Counters.Counter private _itemsClaimed;
 
   address payable owner;
   uint256 listingPrice = 0.025 ether;
@@ -26,8 +26,7 @@ contract NFTMarket is ReentrancyGuard {
     uint256 tokenId;
     address payable seller;
     address payable owner;
-    uint256 price;
-    bool sold;
+    bool claimed;
   }
 
   mapping(uint256 => MarketItem) private idToMarketItem;
@@ -38,8 +37,7 @@ contract NFTMarket is ReentrancyGuard {
     uint256 indexed tokenId,
     address seller,
     address owner,
-    uint256 price,
-    bool sold
+    bool claimed
   );
 
   /* Returns the listing price of the contract */
@@ -50,10 +48,9 @@ contract NFTMarket is ReentrancyGuard {
   /* Places an item for sale on the marketplace */
   function createMarketItem(
     address nftContract,
-    uint256 tokenId,
-    uint256 price
+    uint256 tokenId
   ) public payable nonReentrant {
-    require(price > 0, "Price must be at least 1 wei");
+    //require(price > 0, "Price must be at least 1 wei");
     require(msg.value == listingPrice, "Price must be equal to listing price");
 
     _itemIds.increment();
@@ -65,7 +62,6 @@ contract NFTMarket is ReentrancyGuard {
       tokenId,
       payable(msg.sender),
       payable(address(0)),
-      price,
       false
     );
 
@@ -78,7 +74,6 @@ contract NFTMarket is ReentrancyGuard {
       tokenId,
       msg.sender,
       address(0),
-      price,
       false
     );
   }
@@ -89,29 +84,28 @@ contract NFTMarket is ReentrancyGuard {
     address nftContract,
     uint256 itemId
     ) public payable nonReentrant {
-    uint price = idToMarketItem[itemId].price;
     uint tokenId = idToMarketItem[itemId].tokenId;
-    require(msg.value == price, "Please submit the asking price in order to complete the purchase");
+    //require(msg.value == price, "Please submit the asking price in order to complete the purchase");
 
     idToMarketItem[itemId].seller.transfer(msg.value);
     IERC721(nftContract).transferFrom(address(this), msg.sender, tokenId);
 
     //Update Item
     idToMarketItem[itemId].owner = payable(msg.sender);
-    idToMarketItem[itemId].sold = true;
+    idToMarketItem[itemId].claimed = true;
 
-    _itemsSold.increment();
+    _itemsClaimed.increment();
 
     payable(owner).transfer(listingPrice);
   }
 
-  /* Returns all unsold market items */
+  /* Returns all unclaimed market items */
   function fetchMarketItems() public view returns (MarketItem[] memory) {
     uint itemCount = _itemIds.current();
-    uint unsoldItemCount = _itemIds.current() - _itemsSold.current();
+    uint unclaimedItemCount = _itemIds.current() - _itemsClaimed.current();
     uint currentIndex = 0;
 
-    MarketItem[] memory items = new MarketItem[](unsoldItemCount);
+    MarketItem[] memory items = new MarketItem[](unclaimedItemCount);
 
     //Check if NFT has been claimed
     for (uint i = 0; i < itemCount; i++) {
