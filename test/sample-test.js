@@ -16,27 +16,27 @@ describe("NFTMarket", function () {
     let listingPrice = await market.getListingPrice()
     listingPrice = listingPrice.toString()
 
-    const auctionPrice = ethers.utils.parseUnits('100', 'ether')
+    //const auctionPrice = ethers.utils.parseUnits('100', 'ether')
 
     /* create two tokens */
     await nft.createToken("https://www.mytokenlocation.com")
     await nft.createToken("https://www.mytokenlocation2.com")
 
     /* put both tokens for sale */
-    await market.createMarketItem(nftContractAddress, 1, auctionPrice, { value: listingPrice })
-    await market.createMarketItem(nftContractAddress, 2, auctionPrice, { value: listingPrice })
+    await market.createMarketItem(nftContractAddress, 1, 0, { value: listingPrice })
+    await market.createMarketItem(nftContractAddress, 2, 1, { value: listingPrice })
 
     const [_, buyerAddress] = await ethers.getSigners()
 
     /* execute sale of token to another user */
-    await market.connect(buyerAddress).createMarketSale(nftContractAddress, 1, { value: auctionPrice})
+    await market.connect(buyerAddress).createMarketSale(nftContractAddress, 1)
 
     /* query for and return the unsold items */
     items = await market.fetchMarketItems()
     items = await Promise.all(items.map(async i => {
       const tokenUri = await nft.tokenURI(i.tokenId)
       let item = {
-        price: i.price.toString(),
+        _type: i._type,
         tokenId: i.tokenId.toString(),
         seller: i.seller,
         owner: i.owner,

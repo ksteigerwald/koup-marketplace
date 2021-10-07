@@ -16,6 +16,8 @@ contract NFTMarket is ReentrancyGuard {
   address payable owner;
   uint256 listingPrice = 0.025 ether;
 
+  enum ItemType { DISCOUNT, REBATE, COLLECTIBLE }
+
   constructor() {
     owner = payable(msg.sender);
   }
@@ -26,6 +28,7 @@ contract NFTMarket is ReentrancyGuard {
     uint256 tokenId;
     address payable seller;
     address payable owner;
+    ItemType _type;
     bool claimed;
   }
 
@@ -37,6 +40,7 @@ contract NFTMarket is ReentrancyGuard {
     uint256 indexed tokenId,
     address seller,
     address owner,
+    ItemType _type,
     bool claimed
   );
 
@@ -48,7 +52,8 @@ contract NFTMarket is ReentrancyGuard {
   /* Places an item for sale on the marketplace */
   function createMarketItem(
     address nftContract,
-    uint256 tokenId
+    uint256 tokenId,
+    ItemType _type
   ) public payable nonReentrant {
     //require(price > 0, "Price must be at least 1 wei");
     require(msg.value == listingPrice, "Price must be equal to listing price");
@@ -62,6 +67,7 @@ contract NFTMarket is ReentrancyGuard {
       tokenId,
       payable(msg.sender),
       payable(address(0)),
+      _type,
       false
     );
 
@@ -74,6 +80,7 @@ contract NFTMarket is ReentrancyGuard {
       tokenId,
       msg.sender,
       address(0),
+      _type,
       false
     );
   }
