@@ -2,6 +2,19 @@
 //const { ethers } = require("hardhat");
 
 describe("NFTMarket", function () {
+
+  it("Should create an 1555 Token", async function () {
+    const Coupons = await ethers.getContractFactory("Coupons");
+    const couponBook = await Coupons.deploy();
+    await couponBook.deployed();
+    const nftContractAddress = couponBook.address;
+    let foo = await couponBook.createToken(1)
+    console.log(nftContractAddress)
+    console.log(await couponBook.uri(1))
+    console.log((await couponBook.balanceOf(nftContractAddress, 2)).toString())
+    console.log("-------------------")
+  })
+
   it("Should create and execute market sales", async function () {
     const Market = await ethers.getContractFactory("NFTMarket")
     const market = await Market.deploy();
@@ -46,4 +59,5 @@ describe("NFTMarket", function () {
     }))
     console.log('items: ', items)
   })
+
 });
