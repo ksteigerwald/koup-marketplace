@@ -17,6 +17,10 @@ const Item = (props) => {
           <div style={{ height: '70px', overflow: 'hidden' }}>
             <p className="text-gray-400">{item.description}</p>
           </div>
+          <div style={{ height: '44px', overflow: 'hidden' }}>
+            <p>&nbsp;</p>
+            <p className=""><b>Price:</b> ${item.price}</p>
+          </div>
           </div>
           <div className="p-4 bg-black">
             <button className="w-full bg-pink-500 text-white font-bold py-2 px-12 rounded" onClick={() => buyItem(item)}>Buy</button>
